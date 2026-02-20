@@ -12,7 +12,7 @@ Created the `ifrep/` directory in the main workspace to contain the implementati
 
 ## Step 1: File Skeleton Creation
 
-Created the main Julia file `Fpcb.jl` with organized sections:
+The main PCB functional representation is implemented in Python as `pcb.py` (Julia `Fpcb.jl` has been removed). Organized sections:
 
 1. Header and usage comments
 2. Output configuration section
@@ -1590,12 +1590,9 @@ julia code/pcb_example2.jl | python3 ../frep_multicore.py 500 pcb2.png
 
 ```
 ifrep/
-├── Fpcb.jl                  # Main PCB functional representation file
-├── frep.jl                  # Expression evaluator and image renderer (single-threaded)
-├── frep_multicore.jl        # Optimized evaluator (parse once, stable types); multicore-ready (Base.Threads)
-├── frep_multicore.py        # Expression evaluator (Python); NumPy uses multiple cores internally
-├── explain.md                # Build documentation
-├── Project.toml             # Julia package dependencies
+├── pcb.py                   # Main PCB functional representation (outputs JSON for evaluator)
+├── frep_multicore.py        # FRep evaluator (Python); use: pcb.py | frep_multicore.py [dpi [filename]]
+├── explain.md               # Build documentation
 └── examples/
     ├── code/
     │   ├── simple_shapes.jl   # Example 1: Basic shapes with simple colors
@@ -1646,7 +1643,7 @@ Julia implementation benefits:
 
 **frep_multicore.py (Python – multicore via NumPy):**
 - NumPy uses all CPU cores internally (no explicit threading in script)
-- Much faster than Julia for dynamic expressions (e.g. from Fpcb.jl)
+- Much faster than Julia for dynamic expressions (e.g. from pcb.py)
 - Best for: Production rendering and quick iteration with dynamic expressions
 
 ### When to Use Each
@@ -1661,14 +1658,14 @@ Julia implementation benefits:
 - Run with `julia -t auto` for multicore-ready invocation
 
 **Use frep_multicore.py when:**
-- Production or high-DPI rendering with dynamic expressions from Fpcb.jl
+- Production or high-DPI rendering: `pcb.py | frep_multicore.py [dpi [filename]]`
 - You want the fastest evaluation (NumPy’s internal multicore)
 
 ### Performance Tips
 
 1. **Remove text for faster rendering:** Text is the main bottleneck; comment out `add_text()` or use shorter strings for testing.
 2. **Use appropriate DPI:** 100 DPI for quick tests; 300+ DPI for output. Prefer `frep_multicore.py` for 300+ DPI with dynamic expressions.
-3. **Prefer Python for dynamic expressions:** `julia ... | python3 frep_multicore.py` is much faster than Julia evaluators for one-off FRep from Fpcb.jl.
+3. **Use the Python pipeline:** `python3 pcb.py | python3 frep_multicore.py [dpi [filename]]` for PCB design and rendering.
 4. **Simplify expressions:** Fewer components, shorter wires, and fewer nested booleans speed up evaluation.
 
 ### Performance Benchmarks (Typical)
