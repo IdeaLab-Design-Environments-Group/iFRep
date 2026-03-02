@@ -4,7 +4,7 @@
 #    functional representation PCB template
 #
 # usage:
-#    pcb.py | frep_multicore.py [dpi [filename]]
+#    pcb.py | frep.py [dpi [filename]]
 #
 # Neil Gershenfeld 10/4/24
 #
